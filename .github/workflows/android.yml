@@ -1,42 +1,23 @@
-name: Build and Publish Android APK
+name: Build and Publish Release APK
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    tags:
+      - '*'
 
 jobs:
   build:
-    runs-on: windows-latest
-
-    env:
-      JAVA_HOME_11_X64: C:\hostedtoolcache\windows\Java_Adopt_jdk\11.0.10-9\x64
-      ANDROID_SDK_ROOT: C:\Android\android-sdk
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
     - name: Set up JDK 11
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v1
       with:
         java-version: '11'
-        distribution: 'adopt'
 
-    - name: Download Android SDK
-      run: |
-        Invoke-WebRequest -Uri "https://dl.google.com/android/repository/commandlinetools-win-6609375_latest.zip" -OutFile sdk-tools.zip
-        Expand-Archive -Path sdk-tools.zip -DestinationPath "$env:ANDROID_SDK_ROOT/cmdline-tools"
-        Remove-Item -Force sdk-tools.zip
-        Move-Item "$env:ANDROID_SDK_ROOT/cmdline-tools/tools" "$env:ANDROID_SDK_ROOT/cmdline-tools/latest"
-
-    - name: Install Android SDK Packages
-      run: |
-        echo y | $env:ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --sdk_root=$env:ANDROID_SDK_ROOT "platform-tools" "platforms;android-30" "build-tools;30.0.3"
-        
     - name: Grant execute permission for Gradle
       run: chmod +x ./gradlew
 
@@ -44,8 +25,11 @@ jobs:
       run: ./gradlew assembleRelease
 
     - name: Upload APK
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v2
       with:
         name: release-apk
         path: app/build/outputs/apk/release/app-release.apk
         retention-days: 1
+
+    - name: Authenticate with GitHub
+      run: echo "${{ secrets.GITHUB_TOKEN }}"
