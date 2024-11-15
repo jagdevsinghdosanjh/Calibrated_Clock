@@ -119,7 +119,7 @@
                 if (i % 5 === 0) {
                     const minuteLabel = document.createElement('div');
                     minuteLabel.classList.add('minute-label');
-                    minuteLabel.innerText = i === 0 ? '12' : i/5;
+                    minuteLabel.innerText = i === 0 ? '60' : i;
                     // Adjust the transformation to keep the text vertical
                     minuteLabel.style.transform = `rotate(${angle}deg) translateY(-105px) rotate(${-angle}deg)`;
                     dial.appendChild(minuteLabel);
