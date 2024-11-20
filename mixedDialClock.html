@@ -53,6 +53,11 @@
             height: 90px;
             background: blue;
         }
+        .msec {
+            width: 1px;
+            height: 100px;
+            background:magenta;
+        }
         .dial {
             position: absolute;
             top: 50%;
@@ -89,19 +94,31 @@
         <div class="hand hour" id="hour"></div>
         <div class="hand minute" id="minute"></div>
         <div class="hand second" id="second"></div>
+        <div class="hand msec" id="msec"></div>
         <div class="dial" id="dial"></div>
     </div>
+    
     <script>
+        function updateMilliHand(){
+            const curDate = new Date();
+            const millisec = curDate.getMilliseconds();
+            const msecAngle = millisec * 0.36;
+            document.getElementById('msec').style.transform = `translate(-50%, -100%) rotate(${msecAngle}deg)`;
+        }
+
+// Ensure you call the updateMilliHand function every millisecond
+setInterval(updateMilliHand, 1);
+
         function updateClock() {
             const now = new Date();
             const seconds = now.getSeconds();
-            const minutes = now.getMinutes();
+            const minutes = now.getMinutes() + seconds/60;
             const hours = now.getHours() % 12 + minutes / 60;
             
             const secondAngle = seconds * 6;
             const minuteAngle = minutes * 6;
             const hourAngle = hours * 30;
-
+            
             document.getElementById('second').style.transform = `translate(-50%, -100%) rotate(${secondAngle}deg)`;
             document.getElementById('minute').style.transform = `translate(-50%, -100%) rotate(${minuteAngle}deg)`;
             document.getElementById('hour').style.transform = `translate(-50%, -100%) rotate(${hourAngle}deg)`;
@@ -119,7 +136,7 @@
                 if (i % 5 === 0) {
                     const minuteLabel = document.createElement('div');
                     minuteLabel.classList.add('minute-label');
-                    minuteLabel.innerText = i === 0 ? '60' : i;
+                    minuteLabel.innerText = i === 0 ? '12' : i/5;
                     // Adjust the transformation to keep the text vertical
                     minuteLabel.style.transform = `rotate(${angle}deg) translateY(-105px) rotate(${-angle}deg)`;
                     dial.appendChild(minuteLabel);
@@ -127,8 +144,8 @@
             }
         }
 
-        createMinuteMarks();
-        setInterval(updateClock, 1000);
-    </script>
+       createMinuteMarks();
+       setInterval(updateClock,1000);
+    </script>     
 </body>
 </html>
